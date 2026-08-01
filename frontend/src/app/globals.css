@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  background-color: #0A0A0A;
+  color: #E7EBEF;
+}
+
+/* Visible, on-brand focus ring for keyboard nav (WCAG) */
+:focus-visible {
+  outline: 2px solid #00FF88;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Glassmorphism card primitive */
+.glass {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.glass:hover {
+  border-color: rgba(255,255,255,0.16);
+}
+
+/* Terminal caret used as a structural/signature device */
+.caret::after {
+  content: "\2588";
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  color: #00FF88;
+}
+
+/* Faint grid backdrop for hero/section atmosphere */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+::selection {
+  background: rgba(0,255,136,0.25);
+  color: #E7EBEF;
+}
+
+/* Scrollbar (webkit) tuned to theme */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #1E252D; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #2A333D; }
+
+pre {
+  scrollbar-width: thin;
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "net-nmap-01",
+    "title": "Nmap Network Scanning Essentials",
+    "category": "Network Security",
+    "source_document": "Network Defense & Reconnaissance Guide",
+    "tags": ["nmap", "port-scanning", "reconnaissance", "firewall-evasion"],
+    "content": "Nmap (Network Mapper) is an open-source tool for network discovery and security auditing. Key command syntax: `nmap -sS -p 1-65535 -T4 -v <target>` (SYN Stealth Scan across all ports); `nmap -sV -sC <target>` (Service version detection and default NSE scripts); `nmap -O <target>` (OS fingerprinting); `nmap -Pn <target>` (Treat all hosts as online, bypass ping probe). Evasion techniques include packet fragmentation (`-f`) and decoy scanning (`-D`)."
+  },
+  {
+    "id": "net-wireshark-02",
+    "title": "Wireshark Packet Analysis & PCAP Filtering",
+    "category": "Network Security",
+    "source_document": "Network Defense & Reconnaissance Guide",
+    "tags": ["wireshark", "pcap", "packet-analysis", "tcpdump"],
+    "content": "Wireshark is a network packet analyzer. Essential display filters: `ip.addr == 192.168.1.1` (Filter by IP); `tcp.flags.syn == 1 && tcp.flags.ack == 0` (Identify TCP SYN packets / port scan attempts); `http.request.method == \"POST\"` (Find HTTP POST requests); `dns.flags.response == 0` (Find DNS queries); `tls.handshake.type == 1` (Client Hello TLS handshake). Follow TCP Stream feature reconstructs complete conversations."
+  },
+  {
+    "id": "net-tcpip-03",
+    "title": "TCP 3-Way Handshake & Connection Teardown",
+    "category": "Network Security",
+    "source_document": "Network Defense & Reconnaissance Guide",
+    "tags": ["tcp", "ip", "handshake", "syn-ack", "fin-ack"],
+    "content": "TCP connection establishment follows the 3-Way Handshake: 1) Client sends `SYN` (Synchronize) with initial sequence number (ISN); 2) Server responds with `SYN-ACK` (Synchronize-Acknowledge); 3) Client replies with `ACK` (Acknowledge). Connection termination uses `FIN` or `RST` packets. Attack vectors include SYN Flooding (DoS attack exhausting connection queue space) mitigated by SYN Cookies."
+  }
+]

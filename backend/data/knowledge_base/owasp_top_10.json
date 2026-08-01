@@ -1,0 +1,42 @@
+[
+  {
+    "id": "owasp-a01-2021",
+    "title": "A01:2021 - Broken Access Control",
+    "category": "OWASP",
+    "source_document": "OWASP Top 10 2021 Standard",
+    "tags": ["access-control", "authorization", "idor", "privilege-escalation"],
+    "content": "Broken Access Control moves up from the fifth position to the number one spot in the OWASP Top 10. Access control enforces policy such that users cannot act outside of their intended permissions. Failures typically lead to unauthorized information disclosure, modification, or destruction of all data, or performing a business function outside the user's limits. Common access control vulnerabilities include Insecure Direct Object References (IDOR), bypassing access control checks by modifying the URL, internal application state, or HTML page, elevation of privilege (acting as admin when logged in as user), and metadata manipulation such as tampering with a JWT or cookie."
+  },
+  {
+    "id": "owasp-a02-2021",
+    "title": "A02:2021 - Cryptographic Failures",
+    "category": "OWASP",
+    "source_document": "OWASP Top 10 2021 Standard",
+    "tags": ["cryptography", "encryption", "sensitive-data", "hashing"],
+    "content": "Cryptographic Failures, previously known as Sensitive Data Exposure, focuses on failures related to cryptography (or lack thereof), which often leads to exposure of sensitive data. Key areas to inspect include: Is any data transmitted in clear text (HTTP, FTP, SMTP)? Are legacy cryptographic algorithms used (MD5, SHA1, DES, RC4)? Are default cryptographic keys reused, generate weak keys, or lack key rotation? Is TLS enforced for all incoming and outgoing connections? Use salted, slow password hashing functions like Argon2, bcrypt, or PBKDF2 for password storage."
+  },
+  {
+    "id": "owasp-a03-2021",
+    "title": "A03:2021 - Injection",
+    "category": "OWASP",
+    "source_document": "OWASP Top 10 2021 Standard",
+    "tags": ["injection", "sqli", "command-injection", "nosql", "ldap"],
+    "content": "Injection vulnerabilities occur when untrusted data is sent to an interpreter as part of a command or query. The attacker's hostile data can trick the interpreter into executing unintended commands or accessing data without proper authorization. Injection types include SQL Injection (SQLi), Command Injection, NoSQL Injection, and LDAP Injection. Primary defense against injection is using parameterized queries (Prepared Statements) for SQL, strict input validation, white-list validation, and avoiding shell execution functions like system() or eval()."
+  },
+  {
+    "id": "owasp-a04-2021",
+    "title": "A04:2021 - Insecure Design",
+    "category": "OWASP",
+    "source_document": "OWASP Top 10 2021 Standard",
+    "tags": ["threat-modeling", "architecture", "secure-design"],
+    "content": "Insecure Design is a category focusing on risks related to design and architectural flaws. It calls for more use of threat modeling, secure design patterns, and reference architectures. Insecure design cannot be fixed by a perfect implementation; security controls must be designed into the application from the start. Key practices include secure design patterns, principle of least privilege, defense in depth, and threat modeling during sprint planning."
+  },
+  {
+    "id": "owasp-a05-2021",
+    "title": "A05:2021 - Security Misconfiguration",
+    "category": "OWASP",
+    "source_document": "OWASP Top 10 2021 Standard",
+    "tags": ["misconfiguration", "hardening", "cloud-security", "default-passwords"],
+    "content": "Security Misconfiguration happens when security settings are defined, implemented, and maintained with defaults or errors. This includes unnecessary features enabled (e.g., unnecessary ports, services, pages), default accounts/passwords unchanged, error handling revealing stack traces, unhardened cloud storage permissions (e.g., S3 bucket open to public), and missing HTTP security headers like HSTS, Content-Security-Policy, and X-Frame-Options."
+  }
+]
