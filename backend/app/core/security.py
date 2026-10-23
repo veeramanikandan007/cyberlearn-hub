@@ -29,6 +29,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 def create_access_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+    if not settings.SECRET_KEY:
+        raise RuntimeError("SECRET_KEY must be configured before issuing access tokens.")
+
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:

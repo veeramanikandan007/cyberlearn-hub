@@ -11,11 +11,17 @@ async function proxyBackend(request: Request): Promise<Response> {
 
   const incomingUrl = new URL(request.url);
   const backendBaseUrl = new URL(backendUrl.endsWith("/") ? backendUrl : `${backendUrl}/`);
-  const apiPath = incomingUrl.pathname.replace(/^\/api\/v1\/?/, "");
+  const apiPath = incomingUrl.pathname.replace(/^\/+/, "");
   const targetUrl = new URL(`${apiPath}${incomingUrl.search}`, backendBaseUrl);
   const headers = new Headers(request.headers);
 
-  for (const header of ["host", "connection", "content-length", "transfer-encoding"]) {
+  for (const header of [
+    "host",
+    "connection",
+    "content-length",
+    "expect",
+    "transfer-encoding",
+  ]) {
     headers.delete(header);
   }
 

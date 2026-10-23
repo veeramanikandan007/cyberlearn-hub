@@ -35,7 +35,9 @@ The repository root `vercel.json` configures a Vercel project with two services:
 - `backend` builds the FastAPI app and remains internal; it has no public rewrite.
 - The frontend declares a service binding named `BACKEND_URL`. The `/api/v1/*` Next.js route handler proxies browser requests to the backend server-side, so the backend URL is not exposed to the browser.
 
-Import the repository as one Vercel project with the repository root as the project root so Vercel can read `vercel.json` and build both services. Configure production secrets and any required AI provider keys in the backend service's environment. Do not define `BACKEND_URL` manually in Vercel; the service binding injects it. For local development, the `.env.example` value is for running the frontend proxy against a local backend. Run `vercel dev` from the repository root to test the Vercel service binding and routing.
+Import the repository as one Vercel project with the repository root as the project root so Vercel can read `vercel.json` and build both services. Configure `DATABASE_URL` with a PostgreSQL connection string and a unique random `SECRET_KEY` in the backend service's environment, along with any required AI provider keys. Do not define `BACKEND_URL` manually in Vercel; the service binding injects it. For local development, the frontend `.env.example` value is for running the frontend proxy against a local backend. Run `vercel dev` from the repository root to test the Vercel service binding and routing.
+
+Registration and login use the backend's PostgreSQL `cyberlearn_users` table; the API creates the table if it does not yet exist. Passwords are stored as PBKDF2 hashes. No credentials or signing secrets are committed to the repository.
 
 The following are intentional limitations of the Vercel demo deployment:
 

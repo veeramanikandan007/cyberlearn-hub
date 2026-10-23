@@ -8,9 +8,10 @@ class Settings(BaseSettings):
     PORT: int = 8000
     HOST: str = "0.0.0.0"
     
-    SECRET_KEY: str = "supersecret_cyberlearn_jwt_key_change_in_production"
+    SECRET_KEY: str = ""
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
+    DATABASE_URL: str = ""
     
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
     
