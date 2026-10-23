@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { getCourseBySlug, difficultyColor } from "@/data/courses";
 import { Shield, CheckCircle2, Bot, Award, ArrowLeft, Lightbulb, Lock, Send, Sparkles } from "lucide-react";
 import { getLabHint } from "@/lib/api";
@@ -18,12 +16,12 @@ export default function CourseRoomPage() {
   const [completedQuestions, setCompletedQuestions] = useState<Record<string, boolean>>({});
   const [userXp, setUserXp] = useState(150);
   const [activeHint, setActiveHint] = useState<string | null>(null);
+  const [hintError, setHintError] = useState<string | null>(null);
   const [loadingHint, setLoadingHint] = useState<string | null>(null);
 
   if (!course) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-mono">
-        <Navbar />
         <main className="flex-1 max-w-4xl mx-auto px-6 py-20 text-center">
           <Shield className="mx-auto h-16 w-16 text-rose-500 mb-4" />
           <h1 className="text-2xl font-bold">Cyber Room Not Found</h1>
@@ -35,12 +33,11 @@ export default function CourseRoomPage() {
             <ArrowLeft size={16} /> Back to Course Catalog
           </button>
         </main>
-        <Footer />
       </div>
     );
   }
 
-  const tasks = course.tasks || [
+  const tasks = (course as any).tasks || [
     {
       title: "Task 1: Room Introduction & Objectives",
       content: course.description || course.summary,
@@ -56,6 +53,7 @@ export default function CourseRoomPage() {
     },
   ];
 
+
   const handleCheckAnswer = (qId: string, expectedFlag: string, points: number) => {
     const userVal = (answers[qId] || "").trim().toLowerCase();
     const expected = expectedFlag.toLowerCase();
@@ -70,25 +68,26 @@ export default function CourseRoomPage() {
 
   const handleRequestHint = async (qId: string, questionText: string) => {
     setLoadingHint(qId);
+    setHintError(null);
     try {
       const hintRes = await getLabHint(qId, `${course.title}: ${questionText}`);
       setActiveHint(hintRes.hint);
-    } catch {
-      setActiveHint("Analyze the task overview text and test single key terms.");
+    } catch (error) {
+      setHintError(error instanceof Error ? error.message : "Unable to fetch a hint.");
     } finally {
       setLoadingHint(null);
     }
   };
 
-  const totalQuestions = tasks.reduce((acc, t) => acc + t.questions.length, 0);
+  const totalQuestions = tasks.reduce((acc: number, t: any) => acc + (t.questions?.length || 0), 0);
   const solvedCount = Object.keys(completedQuestions).length;
   const progressPercent = totalQuestions > 0 ? Math.round((solvedCount / totalQuestions) * 100) : 0;
 
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-mono selection:bg-emerald-500/30">
-      <Navbar />
-
       <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10">
+
         {/* Navigation back */}
         <button
           onClick={() => router.push("/courses")}
@@ -140,14 +139,14 @@ export default function CourseRoomPage() {
 
         {/* Room Tasks Container */}
         <div className="space-y-8">
-          {tasks.map((task, tIdx) => (
+          {tasks.map((task: any, tIdx: number) => (
             <div key={tIdx} className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl">
               {/* Task Header */}
               <div className="flex items-center gap-3 border-b border-slate-800 pb-4 mb-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-bold">
                   {tIdx + 1}
                 </div>
-                <h2 className="text-lg font-bold text-slate-100">{task.title}</h2>
+                <h2 className="text-sm font-bold text-slate-100">{task.title}</h2>
               </div>
 
               {/* Task Narrative / Content */}
@@ -157,8 +156,9 @@ export default function CourseRoomPage() {
 
               {/* Task Questions */}
               <div className="space-y-4">
-                {task.questions.map((q) => {
+                {task.questions.map((q: any) => {
                   const isSolved = completedQuestions[q.id];
+
 
                   return (
                     <div
@@ -222,6 +222,12 @@ export default function CourseRoomPage() {
         </div>
 
         {/* Global RAG AI Assistant Modal Banner */}
+        {hintError && (
+          <p role="alert" className="mt-6 text-xs text-red-400">
+            {hintError}
+          </p>
+        )}
+
         {activeHint && (
           <div className="mt-6 rounded-2xl border border-amber-500/40 bg-amber-950/20 p-5 font-mono text-xs text-slate-200">
             <div className="flex items-center justify-between mb-2">
@@ -236,8 +242,6 @@ export default function CourseRoomPage() {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

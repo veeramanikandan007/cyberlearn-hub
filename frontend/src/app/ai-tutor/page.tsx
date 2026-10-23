@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Bot, Sparkles, BookOpen, Shield, Send, CheckCircle2, Cpu, Zap, ArrowRight } from "lucide-react";
 import { queryRAG, RAGResponse } from "@/lib/api";
 
@@ -26,16 +24,19 @@ export default function AITutorPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<RAGResponse | null>(null);
+  const [queryError, setQueryError] = useState<string | null>(null);
 
   const handleQuery = async (searchQuery: string) => {
     if (!searchQuery.trim()) return;
     setLoading(true);
     setQuery(searchQuery);
+    setQueryError(null);
+    setResponse(null);
     try {
       const data = await queryRAG(searchQuery, activeCategory === "all" ? undefined : activeCategory);
       setResponse(data);
-    } catch (err) {
-      console.error("RAG Query error", err);
+    } catch (error) {
+      setQueryError(error instanceof Error ? error.message : "Unable to reach the RAG service.");
     } finally {
       setLoading(false);
     }
@@ -43,8 +44,6 @@ export default function AITutorPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-mono selection:bg-emerald-500/30">
-      <Navbar />
-
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-10">
         {/* Page Header */}
         <div className="mb-8 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-950 p-8 shadow-xl">
@@ -144,6 +143,12 @@ export default function AITutorPage() {
           </div>
         )}
 
+        {queryError && (
+          <p role="alert" className="rounded-xl border border-red-500/30 bg-red-950/20 p-4 text-sm text-red-300">
+            {queryError}
+          </p>
+        )}
+
         {response && !loading && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Response Box */}
@@ -192,8 +197,6 @@ export default function AITutorPage() {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

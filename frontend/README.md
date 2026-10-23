@@ -29,6 +29,18 @@ Then open http://localhost:3000.
 
 ## Deployment notes
 
-- Configure the environment variables from .env.example before wiring auth, Postgres, and Stripe
-- Deploy on Vercel with the Next.js app router and a PostgreSQL provider such as Neon or Supabase
-- The current implementation is UI- and content-focused and ready for backend integration
+The repository root `vercel.json` configures a Vercel project with two services:
+
+- `frontend` builds this Next.js app and receives all public paths.
+- `backend` builds the FastAPI app and remains internal; it has no public rewrite.
+- The frontend declares a service binding named `BACKEND_URL`. The `/api/v1/*` Next.js route handler proxies browser requests to the backend server-side, so the backend URL is not exposed to the browser.
+
+Import the repository as one Vercel project with the repository root as the project root so Vercel can read `vercel.json` and build both services. Configure production secrets and any required AI provider keys in the backend service's environment. Do not define `BACKEND_URL` manually in Vercel; the service binding injects it. For local development, the `.env.example` value is for running the frontend proxy against a local backend. Run `vercel dev` from the repository root to test the Vercel service binding and routing.
+
+The following are intentional limitations of the Vercel demo deployment:
+
+- Vercel Functions cannot run a Docker daemon. `LabOrchestrator` falls back to simulated `sim-*` lab sessions so the demo works without a Docker host.
+- Session tracking is in memory and intended for ephemeral demo sessions; use persistent storage such as Redis or PostgreSQL if sessions need to survive function invocations.
+- The terminal WebSocket endpoint (`/ws/shell/{session_id}`) is reserved for persistent hosting environments and is not proxied through the Vercel HTTP API route. For real container isolation and interactive WebSockets, run the backend with the provided `docker-compose.yml` or on a dedicated container host such as Fly.io or a VPS.
+
+Run `npm run build` from the `frontend` directory to verify the Next.js build locally.

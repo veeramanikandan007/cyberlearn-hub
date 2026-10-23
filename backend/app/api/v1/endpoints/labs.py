@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, Body
-from typing import List, Dict, Any
+from fastapi import APIRouter, HTTPException, Body, Query
+from typing import List, Dict, Any, Optional
 from app.models.schemas import LabChallenge
+from app.services.orchestrator import orchestrator
 
 router = APIRouter()
 
@@ -43,6 +44,39 @@ LABS_DATA = [
 async def get_labs():
     return LABS_DATA
 
+@router.post("/{lab_id}/launch", summary="Launch Docker Vulnerable Lab Container")
+async def launch_lab_container(
+    lab_id: str,
+    user_id: str = Query("demo-user-01", description="Current authenticated user ID")
+):
+    session = orchestrator.launch_lab(user_id=user_id, lab_id=lab_id)
+    return {
+        "status": "launched",
+        "message": f"Lab instance for {lab_id} is running.",
+        "session": session
+    }
+
+@router.post("/{lab_id}/stop", summary="Stop and Teardown Lab Container")
+async def stop_lab_container(
+    lab_id: str,
+    user_id: str = Query("demo-user-01", description="Current authenticated user ID")
+):
+    orchestrator.terminate_lab(user_id=user_id, lab_id=lab_id)
+    return {
+        "status": "stopped",
+        "message": f"Lab instance {lab_id} has been terminated."
+    }
+
+@router.get("/{lab_id}/session", summary="Get Active Lab Container Session")
+async def get_lab_session(
+    lab_id: str,
+    user_id: str = Query("demo-user-01", description="Current authenticated user ID")
+):
+    session = orchestrator.get_session(user_id=user_id, lab_id=lab_id)
+    if not session:
+        return {"status": "inactive", "session": None}
+    return {"status": "active", "session": session}
+
 @router.post("/{lab_id}/verify", summary="Verify Lab Solution Flag")
 async def verify_lab_flag(
     lab_id: str,
@@ -59,3 +93,4 @@ async def verify_lab_flag(
         return {"status": "success", "message": "Flag verified successfully!", "points_awarded": 150}
     else:
         return {"status": "failed", "message": "Incorrect flag submission. Keep trying or request an AI Hint!"}
+

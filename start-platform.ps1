@@ -1,5 +1,6 @@
 # CyberLearn Hub Platform Launcher
-$DesktopPath = "C:\Users\manikandan\OneDrive\Desktop\cyberlearn-hub-main"
+$DesktopPath = $PSScriptRoot
+
 
 Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host " Starting CyberLearn Hub Platform..." -ForegroundColor Green
@@ -23,7 +24,8 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$DesktopPath\
 
 # 3. Launch Next.js Frontend
 Write-Host "[3/3] Launching Next.js 15 Frontend on http://localhost:3000..." -ForegroundColor Green
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$DesktopPath\frontend'; Write-Host '--- Next.js 15 Cyber UI ---' -ForegroundColor Cyan; npx next dev -H 0.0.0.0 -p 3000"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$DesktopPath\frontend'; Remove-Item -Path .next -Recurse -Force -ErrorAction SilentlyContinue; Write-Host '--- Next.js 15 Cyber UI ---' -ForegroundColor Cyan; npx next dev -H 0.0.0.0 -p 3000"
+
 
 Write-Host ""
 Write-Host "✅ Platform servers launched in new windows!" -ForegroundColor Green

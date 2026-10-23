@@ -1,138 +1,146 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Terminal, Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from "lucide-react";
+import { Terminal, Github, Loader2, CheckCircle2 } from "lucide-react";
+import { loginUser } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("user@cyberlearn.com");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      setStatus({ type: "error", message: "Please enter both email and password." });
+      return;
+    }
+
     setLoading(true);
-    setError("");
+    setStatus(null);
 
     try {
-      const res = await fetch("http://localhost:8000/api/v1/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const result = await loginUser(email, password);
+      localStorage.setItem("cyberlearn_token", result.access_token);
+      localStorage.setItem("cyberlearn_user", JSON.stringify(result.user));
+      window.dispatchEvent(new Event("auth-change"));
+      setStatus({ type: "success", message: "Successfully logged in! Redirecting..." });
+      setTimeout(() => {
+        router.push("/labs");
+      }, 800);
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : "Unable to log in. Please try again.",
       });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || "Invalid email or password.");
-      }
-
-      const data = await res.json();
-      // Store JWT token & user info in localStorage
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Redirect to dashboard
-      router.push("/dashboard");
-    } catch (err: any) {
-      console.warn("FastAPI backend error, applying seamless login session", err);
-      // Seamless local login fallback if backend isn't reachable
-      const mockUser = { email, name: email.split("@")[0] || "Cyber Learner", role: "student" };
-      localStorage.setItem("token", "mock_jwt_token_123");
-      localStorage.setItem("user", JSON.stringify(mockUser));
-      router.push("/dashboard");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleGithubClick = () => {
+    setStatus({
+      type: "error",
+      message: "GitHub sign-in is not configured yet. Please use your email and password.",
+    });
+  };
+
   return (
-    <div className="grid-bg flex min-h-[calc(100vh-64px)] items-center justify-center px-6 py-16 font-mono text-slate-100">
-      <div className="glass w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/90 p-8 shadow-2xl backdrop-blur-xl">
+    <div className="grid-bg flex min-h-[calc(100vh-64px)] items-center justify-center px-6 py-16">
+      <div className="glass w-full max-w-sm rounded-xl p-8">
         <div className="flex items-center gap-2 font-mono text-sm text-text">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-green/30 bg-green/10 text-green">
             <Terminal size={16} />
           </span>
-          <span className="font-bold text-slate-100">
-            CyberLearn<span className="text-emerald-400">Hub</span>
-          </span>
+          CyberLearn<span className="text-green">Hub</span>
         </div>
-
-        <h1 className="mt-6 text-2xl font-bold text-slate-100">Welcome Back, Agent</h1>
-        <p className="mt-1 text-xs text-slate-400 leading-relaxed">
-          Log in to access your cybersecurity rooms, CTF labs, and RAG AI assistant.
+        <h1 className="mt-6 text-xl font-semibold text-text">Welcome back</h1>
+        <p className="mt-1 text-sm text-text-dim">
+          Log in to pick up where you left off.
         </p>
 
-        {error && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">
-            <AlertCircle size={16} />
-            <span>{error}</span>
+        {status && (
+          <div
+            className={`mt-4 flex items-center gap-2 rounded-md p-3 text-xs font-mono ${
+              status.type === "success"
+                ? "border border-green/30 bg-green/10 text-green"
+                : "border border-severity-critical/30 bg-severity-critical/10 text-severity-critical"
+            }`}
+          >
+            {status.type === "success" && <CheckCircle2 size={14} />}
+            <span>{status.message}</span>
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="email" className="font-mono text-xs text-slate-300">
-              Email Address
+            <label htmlFor="email" className="font-mono text-xs text-text-faint">
+              Email
             </label>
-            <div className="relative mt-1.5">
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-3 pl-10 text-xs text-slate-100 outline-none focus:border-emerald-500"
-                placeholder="user@cyberlearn.com"
-              />
-              <Mail size={16} className="absolute left-3 top-3.5 text-slate-500" />
-            </div>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              className="mt-1.5 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-text outline-none focus:border-green/50"
+              placeholder="you@example.com"
+              required
+            />
           </div>
-
           <div>
             <div className="flex items-center justify-between">
-              <label htmlFor="password" className="font-mono text-xs text-slate-300">
+              <label htmlFor="password" className="font-mono text-xs text-text-faint">
                 Password
               </label>
-              <Link href="/forgot-password" className="font-mono text-xs text-slate-400 hover:text-emerald-400">
+              <Link href="/forgot-password" className="font-mono text-xs text-text-faint hover:text-green">
                 Forgot?
               </Link>
             </div>
-            <div className="relative mt-1.5">
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-3 pl-10 text-xs text-slate-100 outline-none focus:border-emerald-500"
-                placeholder="••••••••"
-              />
-              <Lock size={16} className="absolute left-3 top-3.5 text-slate-500" />
-            </div>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              className="mt-1.5 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-text outline-none focus:border-green/50"
+              placeholder="••••••••"
+              required
+            />
           </div>
-
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 font-mono text-xs font-bold text-slate-950 transition-all hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-500/20 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-green py-2.5 font-mono text-sm font-semibold text-bg transition-transform hover:-translate-y-0.5 hover:shadow-glow disabled:opacity-50"
           >
-            <span>{loading ? "Authenticating..." : "Log in to Platform"}</span>
-            <ArrowRight size={16} />
+            {loading ? <Loader2 size={16} className="animate-spin" /> : "Log in"}
           </button>
         </form>
 
-        <div className="mt-6 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-center">
-          <p className="text-[11px] text-emerald-400 flex items-center justify-center gap-1.5">
-            <ShieldCheck size={14} /> Demo Email: <span className="font-bold">user@cyberlearn.com</span> (Password: <span className="font-bold">password123</span>)
-          </p>
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="font-mono text-xs text-text-faint">or</span>
+          <div className="h-px flex-1 bg-border" />
         </div>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={handleGithubClick}
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-border py-2.5 font-mono text-sm text-text transition-colors hover:border-border-hover disabled:opacity-50"
+          >
+            <Github size={15} /> Continue with GitHub
+          </button>
+        </div>
+
+        <p className="mt-6 text-center text-sm text-text-dim">
           New here?{" "}
-          <Link href="/register" className="text-emerald-400 font-bold hover:underline">
+          <Link href="/register" className="text-green hover:underline">
             Create an account
           </Link>
         </p>

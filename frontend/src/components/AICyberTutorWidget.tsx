@@ -16,16 +16,19 @@ export default function AICyberTutorWidget() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<RAGResponse | null>(null);
+  const [queryError, setQueryError] = useState<string | null>(null);
 
   const handleSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) return;
     setLoading(true);
     setQuery(searchQuery);
+    setQueryError(null);
+    setResponse(null);
     try {
       const data = await queryRAG(searchQuery);
       setResponse(data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      setQueryError(error instanceof Error ? error.message : "Unable to reach the RAG service.");
     } finally {
       setLoading(false);
     }
@@ -64,6 +67,7 @@ export default function AICyberTutorWidget() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
+              aria-label="Close AI tutor"
               className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
             >
               <X size={18} />
@@ -96,6 +100,12 @@ export default function AICyberTutorWidget() {
                 <Bot className="h-5 w-5 animate-spin" />
                 <span>Searching Cybersecurity Vector Database...</span>
               </div>
+            )}
+
+            {queryError && (
+              <p role="alert" className="rounded-xl border border-red-500/30 bg-red-950/20 p-4 text-xs text-red-300">
+                {queryError}
+              </p>
             )}
 
             {response && !loading && (

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Terminal, Lock, Mail, User, ArrowRight, AlertCircle } from "lucide-react";
+import { Terminal, Github, Loader2, CheckCircle2 } from "lucide-react";
+import { registerUser } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -11,134 +12,144 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name || !email || !password) {
+      setStatus({ type: "error", message: "Please fill out all fields." });
+      return;
+    }
+
     setLoading(true);
-    setError("");
+    setStatus(null);
 
     try {
-      const res = await fetch("http://localhost:8000/api/v1/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+      const result = await registerUser(name, email, password);
+      localStorage.setItem("cyberlearn_token", result.access_token);
+      localStorage.setItem("cyberlearn_user", JSON.stringify(result.user));
+      window.dispatchEvent(new Event("auth-change"));
+      setStatus({ type: "success", message: "Account created successfully! Redirecting..." });
+      setTimeout(() => {
+        router.push("/labs");
+      }, 800);
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : "Unable to create an account. Please try again.",
       });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || "Registration failed.");
-      }
-
-      const data = await res.json();
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      router.push("/dashboard");
-    } catch (err: any) {
-      console.warn("FastAPI backend fallback registration", err);
-      const mockUser = { email, name: name || "New Agent", role: "student" };
-      localStorage.setItem("token", "mock_jwt_token_new");
-      localStorage.setItem("user", JSON.stringify(mockUser));
-      router.push("/dashboard");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleGithubClick = () => {
+    setStatus({
+      type: "error",
+      message: "GitHub sign-in is not configured yet. Please create an account with your email.",
+    });
+  };
+
   return (
-    <div className="grid-bg flex min-h-[calc(100vh-64px)] items-center justify-center px-6 py-16 font-mono text-slate-100">
-      <div className="glass w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/90 p-8 shadow-2xl backdrop-blur-xl">
+    <div className="grid-bg flex min-h-[calc(100vh-64px)] items-center justify-center px-6 py-16">
+      <div className="glass w-full max-w-sm rounded-xl p-8">
         <div className="flex items-center gap-2 font-mono text-sm text-text">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-green/30 bg-green/10 text-green">
             <Terminal size={16} />
           </span>
-          <span className="font-bold text-slate-100">
-            CyberLearn<span className="text-emerald-400">Hub</span>
-          </span>
+          CyberLearn<span className="text-green">Hub</span>
         </div>
-
-        <h1 className="mt-6 text-2xl font-bold text-slate-100">Join the Cyber Platform</h1>
-        <p className="mt-1 text-xs text-slate-400 leading-relaxed">
-          Create your account to unlock hands-on labs, track XP rank, and ask RAG AI.
+        <h1 className="mt-6 text-xl font-semibold text-text">
+          Start learning free
+        </h1>
+        <p className="mt-1 text-sm text-text-dim">
+          No credit card. Full access to Beginner-track courses and labs.
         </p>
 
-        {error && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">
-            <AlertCircle size={16} />
-            <span>{error}</span>
+        {status && (
+          <div
+            className={`mt-4 flex items-center gap-2 rounded-md p-3 text-xs font-mono ${
+              status.type === "success"
+                ? "border border-green/30 bg-green/10 text-green"
+                : "border border-severity-critical/30 bg-severity-critical/10 text-severity-critical"
+            }`}
+          >
+            {status.type === "success" && <CheckCircle2 size={14} />}
+            <span>{status.message}</span>
           </div>
         )}
 
-        <form onSubmit={handleRegister} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="name" className="font-mono text-xs text-slate-300">
-              Full Name / Handle
+            <label htmlFor="name" className="font-mono text-xs text-text-faint">
+              Full name
             </label>
-            <div className="relative mt-1.5">
-              <input
-                id="name"
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-3 pl-10 text-xs text-slate-100 outline-none focus:border-emerald-500"
-                placeholder="Agent Smith"
-              />
-              <User size={16} className="absolute left-3 top-3.5 text-slate-500" />
-            </div>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoComplete="name"
+              className="mt-1.5 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-text outline-none focus:border-green/50"
+              required
+            />
           </div>
-
           <div>
-            <label htmlFor="email" className="font-mono text-xs text-slate-300">
-              Email Address
+            <label htmlFor="email" className="font-mono text-xs text-text-faint">
+              Email
             </label>
-            <div className="relative mt-1.5">
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-3 pl-10 text-xs text-slate-100 outline-none focus:border-emerald-500"
-                placeholder="agent@example.com"
-              />
-              <Mail size={16} className="absolute left-3 top-3.5 text-slate-500" />
-            </div>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              className="mt-1.5 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-text outline-none focus:border-green/50"
+              required
+            />
           </div>
-
           <div>
-            <label htmlFor="password" className="font-mono text-xs text-slate-300">
+            <label htmlFor="password" className="font-mono text-xs text-text-faint">
               Password
             </label>
-            <div className="relative mt-1.5">
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-3 pl-10 text-xs text-slate-100 outline-none focus:border-emerald-500"
-                placeholder="••••••••"
-              />
-              <Lock size={16} className="absolute left-3 top-3.5 text-slate-500" />
-            </div>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              className="mt-1.5 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-text outline-none focus:border-green/50"
+              required
+            />
           </div>
-
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 font-mono text-xs font-bold text-slate-950 transition-all hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-500/20 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-green py-2.5 font-mono text-sm font-semibold text-bg transition-transform hover:-translate-y-0.5 hover:shadow-glow disabled:opacity-50"
           >
-            <span>{loading ? "Creating Account..." : "Create Account"}</span>
-            <ArrowRight size={16} />
+            {loading ? <Loader2 size={16} className="animate-spin" /> : "Create account"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
-          Already registered?{" "}
-          <Link href="/login" className="text-emerald-400 font-bold hover:underline">
-            Log in here
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="font-mono text-xs text-text-faint">or</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGithubClick}
+          disabled={loading}
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-border py-2.5 font-mono text-sm text-text transition-colors hover:border-border-hover disabled:opacity-50"
+        >
+          <Github size={15} /> Continue with GitHub
+        </button>
+
+        <p className="mt-6 text-center text-sm text-text-dim">
+          Already have an account?{" "}
+          <Link href="/login" className="text-green hover:underline">
+            Log in
           </Link>
         </p>
       </div>

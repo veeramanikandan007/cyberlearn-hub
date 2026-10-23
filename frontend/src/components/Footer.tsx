@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Terminal, Github, Twitter, Linkedin } from "lucide-react";
+import { Terminal, Github } from "lucide-react";
 
 const columns = [
   {
@@ -55,16 +55,15 @@ export default function Footer() {
               real vulnerabilities, real skills.
             </p>
             <div className="mt-5 flex gap-3">
-              {[Github, Twitter, Linkedin].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-text-dim transition-colors hover:border-green/40 hover:text-green"
-                  aria-label="Social link"
-                >
-                  <Icon size={16} />
-                </a>
-              ))}
+              <a
+                href="https://github.com/veeramanikandan007/cyberlearn-hub"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-text-dim transition-colors hover:border-green/40 hover:text-green"
+                aria-label="GitHub repository"
+              >
+                <Github size={16} />
+              </a>
             </div>
           </div>
 

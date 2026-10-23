@@ -1,19 +1,5 @@
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
-export interface TaskQuestion {
-  id: string;
-  question: string;
-  hint: string;
-  flag: string;
-  points: number;
-}
-
-export interface RoomTask {
-  title: string;
-  content: string;
-  questions: TaskQuestion[];
-}
-
 export interface Course {
   slug: string;
   title: string;
@@ -28,7 +14,6 @@ export interface Course {
   description: string;
   objectives: string[];
   hasFullContent: boolean;
-  tasks?: RoomTask[];
 }
 
 export const courses: Course[] = [
@@ -51,35 +36,7 @@ export const courses: Course[] = [
       "Use the binary number system to represent data",
       "Recognize computer security basics such as malware and access control",
     ],
-    hasFullContent: true,
-    tasks: [
-      {
-        title: "Task 1: Introduction to Computer Architecture",
-        content: "Computers process data using a Central Processing Unit (CPU) and volatile Random Access Memory (RAM). In cybersecurity, understanding memory layout and CPU registers helps security analysts identify buffer overflows and memory corruption vulnerabilities.",
-        questions: [
-          {
-            id: "q1",
-            question: "What hardware component holds temporary data while programs are actively running?",
-            hint: "It stands for Random Access Memory.",
-            flag: "RAM",
-            points: 50
-          }
-        ]
-      },
-      {
-        title: "Task 2: Binary & Data Representation",
-        content: "At the hardware level, all data (strings, files, executable code) is represented in binary (0s and 1s) or hexadecimal. In security analysis, hex dumps are used to inspect uncompiled binaries and network packets.",
-        questions: [
-          {
-            id: "q2",
-            question: "What is the decimal equivalent of the 8-bit binary value 00001010?",
-            hint: "8 + 2 = 10",
-            flag: "10",
-            points: 50
-          }
-        ]
-      }
-    ]
+    hasFullContent: false,
   },
   {
     slug: "os-fundamentals",
@@ -100,22 +57,7 @@ export const courses: Course[] = [
       "Use basic command line tools to inspect and manipulate files",
       "Understand how OS access controls affect system security",
     ],
-    hasFullContent: true,
-    tasks: [
-      {
-        title: "Task 1: Operating System Kernel & User Space",
-        content: "The kernel acts as the core interface between computer hardware and system processes. It manages CPU scheduling, memory allocation, and hardware device drivers.",
-        questions: [
-          {
-            id: "q1",
-            question: "What central component of an operating system controls hardware resources and system calls?",
-            hint: "It starts with K.",
-            flag: "kernel",
-            points: 50
-          }
-        ]
-      }
-    ]
+    hasFullContent: false,
   },
   {
     slug: "network-basics",
@@ -136,29 +78,7 @@ export const courses: Course[] = [
       "Understand DNS, DHCP, HTTP/HTTPS, FTP, SSH, and ports",
       "Recognize how network protocols affect security posture",
     ],
-    hasFullContent: true,
-    tasks: [
-      {
-        title: "Task 1: The OSI Reference Model",
-        content: "The Open Systems Interconnection (OSI) model standardizes network communications into 7 distinct layers: Physical, Data Link, Network, Transport, Session, Presentation, and Application.",
-        questions: [
-          {
-            id: "q1",
-            question: "Which layer of the OSI model does the IP protocol operate on?",
-            hint: "Layer 3 - Network Layer",
-            flag: "Network",
-            points: 50
-          },
-          {
-            id: "q2",
-            question: "What is the standard port number used for secure HTTPS traffic?",
-            hint: "HTTP is 80, HTTPS is 443",
-            flag: "443",
-            points: 50
-          }
-        ]
-      }
-    ]
+    hasFullContent: false,
   },
   {
     slug: "linux-basics",
@@ -179,29 +99,7 @@ export const courses: Course[] = [
       "Install and update packages using native tools",
       "Write simple shell commands and scripts",
     ],
-    hasFullContent: true,
-    tasks: [
-      {
-        title: "Task 1: Essential Linux Navigation Commands",
-        content: "Linux administrators and security analysts rely on the command line interface (CLI). Key commands include `pwd` (print working directory), `ls` (list directory contents), and `cd` (change directory).",
-        questions: [
-          {
-            id: "q1",
-            question: "Which Linux command displays your current directory location?",
-            hint: "print working directory",
-            flag: "pwd",
-            points: 50
-          },
-          {
-            id: "q2",
-            question: "What command is used to read file permissions and hidden files?",
-            hint: "ls -la",
-            flag: "ls -la",
-            points: 50
-          }
-        ]
-      }
-    ]
+    hasFullContent: false,
   },
   {
     slug: "python-for-cybersecurity",
@@ -222,22 +120,7 @@ export const courses: Course[] = [
       "Work with lists, dictionaries, and file I/O for log parsing",
       "Handle exceptions and use modules for real-world tool development",
     ],
-    hasFullContent: true,
-    tasks: [
-      {
-        title: "Task 1: Python Socket Programming for Port Scanning",
-        content: "Python provides native socket libraries to initiate TCP connections. A basic port scanner creates a TCP socket (`socket.socket(socket.AF_INET, socket.SOCK_STREAM)`) and attempts connection via `connect_ex((ip, port))`.",
-        questions: [
-          {
-            id: "q1",
-            question: "What built-in Python module is used for low-level network communications?",
-            hint: "import socket",
-            flag: "socket",
-            points: 50
-          }
-        ]
-      }
-    ]
+    hasFullContent: false,
   },
   {
     slug: "cybersecurity-fundamentals",
@@ -258,22 +141,7 @@ export const courses: Course[] = [
       "Understand basic encryption and VPN concepts",
       "Recognize the role of firewalls and network access controls",
     ],
-    hasFullContent: true,
-    tasks: [
-      {
-        title: "Task 1: The CIA Triad",
-        content: "The CIA Triad is the cornerstone of information security: Confidentiality ensures data is accessible only to authorized users, Integrity preserves data accuracy and prevents tampering, and Availability ensures services remain accessible when needed.",
-        questions: [
-          {
-            id: "q1",
-            question: "Which component of the CIA Triad prevents unauthorized modification of data?",
-            hint: "Confidentiality, Integrity, or Availability",
-            flag: "Integrity",
-            points: 50
-          }
-        ]
-      }
-    ]
+    hasFullContent: false,
   },
   {
     slug: "kali-linux",
@@ -286,28 +154,9 @@ export const courses: Course[] = [
     students: "20,100",
     rating: 4.7,
     summary: "Install, configure, and use Kali Linux tools for reconnaissance and validation.",
-    description: "Master Kali Linux distribution, default penetration testing utilities, Metasploit, Nmap, and Hydra.",
-    objectives: [
-      "Navigate Kali Linux tools menu",
-      "Run Nmap recon and Burp Suite proxy",
-      "Execute automated security audits safely"
-    ],
-    hasFullContent: true,
-    tasks: [
-      {
-        title: "Task 1: Reconnaissance with Nmap on Kali",
-        content: "Nmap is pre-installed on Kali Linux. A SYN scan (`nmap -sS <target>`) probes open TCP ports discreetly.",
-        questions: [
-          {
-            id: "q1",
-            question: "What Nmap flag is used for service version detection?",
-            hint: "-sV",
-            flag: "-sV",
-            points: 50
-          }
-        ]
-      }
-    ]
+    description: "",
+    objectives: [],
+    hasFullContent: false,
   },
   {
     slug: "web-application-security",
@@ -319,30 +168,94 @@ export const courses: Course[] = [
     lessons: 3,
     students: "18,204",
     rating: 4.8,
-    summary: "Understand and defend against SQL injection, XSS, and missing security headers.",
-    description: "Understand vulnerabilities behind SQL injection, XSS, and missing security headers with hands-on practice.",
+    summary:
+      "Understand and defend against the vulnerabilities behind most real-world breaches: SQL injection, XSS, and missing security headers.",
+    description:
+      "This course walks through the three vulnerability classes that show up most often in bug bounty reports and breach post-mortems. You'll read vulnerable code, understand exactly why it fails, exploit it safely in a local practice environment, and then fix it the way a security engineer would — with defense-in-depth, not just a single patch.",
     objectives: [
-      "Explain SQL injection mechanics",
-      "Identify Stored vs Reflected XSS",
-      "Implement Content Security Policy (CSP)"
+      "Explain how SQL injection happens at the query-construction level, not just 'unescaped input'",
+      "Exploit and remediate classic and blind SQL injection in a local lab",
+      "Distinguish stored, reflected, and DOM-based XSS and stop each one correctly",
+      "Configure HTTP security headers (CSP, HSTS, X-Content-Type-Options) that meaningfully reduce attack surface",
+      "Read a request/response pair and identify the vulnerability class before touching a tool",
     ],
     hasFullContent: true,
-    tasks: [
-      {
-        title: "Task 1: SQL Injection Mechanics",
-        content: "SQL Injection occurs when user input is concatenated directly into SQL strings. Example payload: `' OR '1'='1`. Defense: Parameterized queries / Prepared statements.",
-        questions: [
-          {
-            id: "q1",
-            question: "What mechanism completely prevents SQL Injection by keeping query logic separate from user parameters?",
-            hint: "Prepared statements",
-            flag: "Prepared statements",
-            points: 50
-          }
-        ]
-      }
-    ]
-  }
+  },
+  {
+    slug: "active-directory-attacks",
+    title: "Active Directory Attacks & Defense",
+    category: "Active Directory",
+    track: "Intermediate",
+    duration: "9h 20m",
+    modules: 9,
+    lessons: 36,
+    students: "12,558",
+    rating: 4.9,
+    summary: "Kerberoasting, lateral movement, and the hardening steps that actually stop them.",
+    description: "",
+    objectives: [],
+    hasFullContent: false,
+  },
+  {
+    slug: "digital-forensics-101",
+    title: "Digital Forensics 101",
+    category: "Digital Forensics",
+    track: "Intermediate",
+    duration: "8h 10m",
+    modules: 7,
+    lessons: 29,
+    students: "9,872",
+    rating: 4.7,
+    summary: "Disk imaging, timeline analysis, and chain-of-custody fundamentals for incident responders.",
+    description: "",
+    objectives: [],
+    hasFullContent: false,
+  },
+  {
+    slug: "cloud-security-foundations",
+    title: "Cloud Security Foundations",
+    category: "Cloud Security",
+    track: "Intermediate",
+    duration: "6h 50m",
+    modules: 6,
+    lessons: 24,
+    students: "14,213",
+    rating: 4.6,
+    summary: "IAM misconfigurations, storage bucket exposure, and the shared responsibility model across AWS, Azure, and GCP.",
+    description: "",
+    objectives: [],
+    hasFullContent: false,
+  },
+  {
+    slug: "threat-hunting-blue-team",
+    title: "Threat Hunting for Blue Teams",
+    category: "Threat Hunting",
+    track: "Advanced",
+    duration: "10h 05m",
+    modules: 8,
+    lessons: 31,
+    students: "6,204",
+    rating: 4.9,
+    summary: "Hypothesis-driven hunting across SIEM data, from IOC sweeps to behavioral detection.",
+    description: "",
+    objectives: [],
+    hasFullContent: false,
+  },
+  {
+    slug: "binary-exploitation-intro",
+    title: "Introduction to Binary Exploitation",
+    category: "Binary Exploitation",
+    track: "Advanced",
+    duration: "11h 30m",
+    modules: 9,
+    lessons: 33,
+    students: "5,117",
+    rating: 4.8,
+    summary: "Stack layout, memory safety, and the mitigations (ASLR, stack canaries, DEP) that changed the game.",
+    description: "",
+    objectives: [],
+    hasFullContent: false,
+  },
 ];
 
 export function getCourseBySlug(slug: string) {

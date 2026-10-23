@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { Clock, Layers, Star, ArrowRight } from "lucide-react";
+import { Clock, Layers, Star } from "lucide-react";
 import { Course, difficultyColor } from "@/data/courses";
 
 export default function CourseCard({ course }: { course: Course }) {
-  const href = `/courses/${course.slug}`;
+  const href = course.hasFullContent ? `/courses/${course.slug}` : "/courses";
 
   return (
     <Link
       href={href}
-      className="glass group flex flex-col justify-between rounded-xl p-6 transition-all hover:-translate-y-1 hover:shadow-glow border border-slate-800 bg-slate-900/60"
+      className="glass group flex flex-col justify-between rounded-xl p-6 transition-all hover:-translate-y-1 hover:shadow-glow"
     >
       <div>
         <div className="flex items-center justify-between">
@@ -22,9 +22,8 @@ export default function CourseCard({ course }: { course: Course }) {
           </span>
         </div>
 
-        <h3 className="mt-4 text-lg font-semibold leading-snug text-text group-hover:text-green flex items-center justify-between">
-          <span>{course.title}</span>
-          <ArrowRight size={16} className="opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0 text-green" />
+        <h3 className="mt-4 text-lg font-semibold leading-snug text-text group-hover:text-green">
+          {course.title}
         </h3>
         <p className="mt-2 text-sm leading-relaxed text-text-dim">
           {course.summary}
